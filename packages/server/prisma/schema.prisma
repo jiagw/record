@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  openid      String       @unique
+  createdAt   DateTime     @default(now())
+  dietLogs    DietLog[]
+  weightLogs  WeightLog[]
+  workoutLogs WorkoutLog[]
+}
+
+model DietLog {
+  id      String @id @default(cuid())
+  userId  String
+  date    String
+  records Json
+  nextId  Int
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model WeightLog {
+  id     String @id @default(cuid())
+  userId String
+  date   String
+  weight Float
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model WorkoutLog {
+  id        String @id @default(cuid())
+  userId    String
+  date      String
+  dayType   String
+  exercises Json
+  nextId    Int
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}

@@ -1,0 +1,16 @@
+{
+  "name": "record-new",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w @record/server",
+    "dev:miniapp": "npm run dev:mp-weixin -w @record/miniapp",
+    "build:server": "npm run build -w @record/shared && npm run build -w @record/server",
+    "build:miniapp": "npm run build:mp-weixin -w @record/miniapp",
+    "db:generate": "npm run db:generate -w @record/server",
+    "db:push": "npm run db:push -w @record/server"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "pages": [
+    {
+      "path": "pages/diet/index",
+      "style": { "navigationBarTitleText": "饮食记录" }
+    },
+    {
+      "path": "pages/weight/index",
+      "style": { "navigationBarTitleText": "体重记录" }
+    },
+    {
+      "path": "pages/workout/index",
+      "style": { "navigationBarTitleText": "健身记录" }
+    }
+  ],
+  "tabBar": {
+    "color": "#909399",
+    "selectedColor": "#409eff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/diet/index",
+        "text": "饮食",
+        "iconPath": "static/tab-diet.png",
+        "selectedIconPath": "static/tab-diet-active.png"
+      },
+      {
+        "pagePath": "pages/weight/index",
+        "text": "体重",
+        "iconPath": "static/tab-weight.png",
+        "selectedIconPath": "static/tab-weight-active.png"
+      },
+      {
+        "pagePath": "pages/workout/index",
+        "text": "健身",
+        "iconPath": "static/tab-workout.png",
+        "selectedIconPath": "static/tab-workout-active.png"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "健康记录",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f0f2f5"
+  }
+}
