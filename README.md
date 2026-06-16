@@ -51,12 +51,35 @@ npm run dev:miniapp
 docker compose up -d --build
 ```
 
-配置环境变量：
+配置环境变量（项目根目录 `.env`）：
 
 - `JWT_SECRET`：JWT 密钥
 - `WX_APPID` / `WX_SECRET`：微信小程序凭证（留空则使用开发模式 openid）
 
 微信公众平台配置 request 合法域名为你的 API HTTPS 地址。
+
+#### 阿里云 / 国内服务器：Docker Hub 拉取超时
+
+若出现 `registry-1.docker.io ... i/o timeout`，任选一种方式：
+
+**方式 A（推荐）：配置镜像加速**
+
+```bash
+sudo sh scripts/configure-docker-mirror.sh
+docker compose up -d --build
+```
+
+也可在 [阿里云容器镜像服务](https://cr.console.aliyun.com/) → 镜像工具 → 镜像加速器，复制专属地址后：
+
+```bash
+sudo sh scripts/configure-docker-mirror.sh https://你的专属地址.mirror.aliyuncs.com
+```
+
+**方式 B：使用国内镜像 compose 覆盖**
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.cn.yml up -d --build
+```
 
 ## API 接口
 

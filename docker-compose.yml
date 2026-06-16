@@ -19,6 +19,8 @@ services:
     build:
       context: .
       dockerfile: packages/server/Dockerfile
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
     ports:
       - "3000:3000"
     environment:

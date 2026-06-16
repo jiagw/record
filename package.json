@@ -11,6 +11,8 @@
     "build:server": "npm run build -w @record/shared && npm run build -w @record/server",
     "build:miniapp": "npm run build:mp-weixin -w @record/miniapp",
     "db:generate": "npm run db:generate -w @record/server",
-    "db:push": "npm run db:push -w @record/server"
+    "db:push": "npm run db:push -w @record/server",
+    "deploy": "docker compose up -d --build",
+    "deploy:cn": "docker compose -f docker-compose.yml -f docker-compose.cn.yml up -d --build"
   }
 }
