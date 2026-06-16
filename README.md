@@ -58,27 +58,19 @@ docker compose up -d --build
 
 微信公众平台配置 request 合法域名为你的 API HTTPS 地址。
 
-#### 阿里云 / 国内服务器：Docker Hub 拉取超时
+#### 阿里云 / 国内服务器
 
-若出现 `registry-1.docker.io ... i/o timeout`，任选一种方式：
-
-**方式 A（推荐）：配置镜像加速**
+`docker-compose.yml` 已默认使用 DaoCloud 镜像源（`docker.m.daocloud.io`），无需访问 Docker Hub。若仍拉取失败，可配置阿里云专属加速器：
 
 ```bash
-sudo sh scripts/configure-docker-mirror.sh
-docker compose up -d --build
+sudo sh scripts/configure-docker-mirror.sh https://你的地址.mirror.aliyuncs.com
 ```
 
-也可在 [阿里云容器镜像服务](https://cr.console.aliyun.com/) → 镜像工具 → 镜像加速器，复制专属地址后：
+海外本地开发若可直连 Docker Hub，在 `.env` 中设置：
 
-```bash
-sudo sh scripts/configure-docker-mirror.sh https://你的专属地址.mirror.aliyuncs.com
-```
-
-**方式 B：使用国内镜像 compose 覆盖**
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.cn.yml up -d --build
+```env
+POSTGRES_IMAGE=postgres:16-alpine
+NODE_IMAGE=node:22-alpine
 ```
 
 ## API 接口

@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: ${POSTGRES_IMAGE:-docker.m.daocloud.io/library/postgres:16-alpine}
     environment:
       POSTGRES_USER: record
       POSTGRES_PASSWORD: record
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: packages/server/Dockerfile
       args:
-        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+        NODE_IMAGE: ${NODE_IMAGE:-docker.m.daocloud.io/library/node:22-alpine}
     ports:
       - "3000:3000"
     environment:
