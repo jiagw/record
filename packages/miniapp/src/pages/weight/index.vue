@@ -8,6 +8,7 @@ import {
   toWeightSummary,
   type WeightSummary,
 } from '@/api/weight'
+import { whenAuthed } from '@/api/auth'
 import { confirm, toast } from '@/api/request'
 import LineChart from '@/components/LineChart.vue'
 
@@ -73,6 +74,7 @@ async function handleSave() {
 }
 
 onMounted(async () => {
+  await whenAuthed()
   await loadWeightForDate(selectedDate.value)
   await loadTrendData()
 })

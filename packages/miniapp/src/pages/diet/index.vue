@@ -13,6 +13,7 @@ import {
 import { toDailySummary, type DailyNutritionSummary } from '@record/shared'
 import type { DietRecord } from '@record/shared'
 import { createDefaultLog, loadAllDailyLogs, loadDailyLog, saveDailyLog } from '@/api/diet'
+import { whenAuthed } from '@/api/auth'
 import { confirm, toast } from '@/api/request'
 import LineChart from '@/components/LineChart.vue'
 
@@ -148,6 +149,7 @@ function removeRecord(id: number) {
 }
 
 onMounted(async () => {
+  await whenAuthed()
   await loadRecordsForDate(selectedDate.value)
   await loadTrendData()
 })

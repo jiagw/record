@@ -16,6 +16,7 @@ import {
   saveWorkoutLog,
   type WorkoutExercise,
 } from '@/api/workout'
+import { whenAuthed } from '@/api/auth'
 import { confirm, toast } from '@/api/request'
 
 const selectedDate = ref(formatDateKey(new Date()))
@@ -136,8 +137,9 @@ async function handleSave() {
   }
 }
 
-onMounted(() => {
-  void loadWorkoutForDate(selectedDate.value)
+onMounted(async () => {
+  await whenAuthed()
+  await loadWorkoutForDate(selectedDate.value)
 })
 </script>
 

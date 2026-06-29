@@ -7,10 +7,10 @@ interface RequestOptions {
   data?: unknown
 }
 
-export async function request<T>(options: RequestOptions): Promise<T> {
+export async function request<T>(options: RequestOptions, retried = false): Promise<T> {
   const token = uni.getStorageSync('token') as string
 
-  return new Promise((resolve, reject) => {
+  const body = await new Promise<T>((resolve, reject) => {
     uni.request({
       url: `${API_BASE_URL}${options.url}`,
       method: options.method ?? 'GET',
@@ -20,21 +20,30 @@ export async function request<T>(options: RequestOptions): Promise<T> {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       success: (res) => {
-        const body = res.data as ApiResponse<T>
+        const payload = res.data as ApiResponse<T>
         if (res.statusCode === 401) {
-          uni.removeStorageSync('token')
           reject(new Error('未登录'))
           return
         }
-        if (!body || body.code !== 0) {
-          reject(new Error(body?.message ?? '请求失败'))
+        if (!payload || payload.code !== 0) {
+          reject(new Error(payload?.message ?? '请求失败'))
           return
         }
-        resolve(body.data)
+        resolve(payload.data)
       },
       fail: (err) => reject(new Error(err.errMsg ?? '网络错误')),
     })
+  }).catch(async (error) => {
+    const isAuthRequest = options.url.includes('/api/auth/')
+    if (!retried && !isAuthRequest && error.message === '未登录') {
+      const { reLogin } = await import('./auth')
+      await reLogin()
+      return request<T>(options, true)
+    }
+    throw error
   })
+
+  return body
 }
 
 export function toast(title: string, icon: 'success' | 'error' | 'none' = 'none') {
