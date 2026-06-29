@@ -29,4 +29,4 @@ COPY --from=builder /app/packages/server/package.json ./
 COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy || npx prisma db push; node dist/index.js"]
+CMD ["sh", "-c", "npx prisma db push && node dist/index.js"]
