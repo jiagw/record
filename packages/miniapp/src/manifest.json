@@ -1,6 +1,6 @@
 {
     "name" : "健康记录",
-    "appid" : "",
+    "appid" : "wxee6ee5f388632f90",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -50,7 +50,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wxee6ee5f388632f90",
         "setting" : {
             "urlCheck" : false
         },

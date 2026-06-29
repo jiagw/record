@@ -81,6 +81,13 @@ export const FOODS: FoodItem[] = [
     unit: 'g',
     per100g: { protein: 16.7, fat: 50.2, carbs: 13.6, calories: 651 },
   },
+  {
+    id: 'milk',
+    name: '悦鲜活纯牛奶',
+    unit: 'piece',
+    weightPerPiece: 500,
+    per100g: { protein: 3.6, fat: 3.9, carbs: 4.8, calories: 68 },
+  },
 
 ]
 

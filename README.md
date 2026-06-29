@@ -19,7 +19,15 @@ packages/
 npm install
 ```
 
-### 2. 启动数据库与 API（Docker）
+### 2. 启动 Web 版（浏览器 + IndexedDB，无需后端）
+
+```bash
+npm run dev:web
+```
+
+浏览器打开 `http://localhost:5173`。
+
+### 3. 启动数据库与 API（Docker）
 
 ```bash
 docker compose up -d postgres
@@ -35,7 +43,7 @@ npm run dev:server
 
 API 默认地址：`http://localhost:3000`
 
-### 3. 启动小程序（H5 调试或微信开发者工具）
+### 4. 启动小程序（H5 调试或微信开发者工具）
 
 ```bash
 npm run dev:miniapp
@@ -45,7 +53,7 @@ npm run dev:miniapp
 
 在 `packages/miniapp/.env.development` 配置 `VITE_API_BASE_URL`。
 
-### 4. 生产部署
+### 5. 生产部署
 
 ```bash
 docker compose up -d --build
