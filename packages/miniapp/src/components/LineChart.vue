@@ -21,9 +21,40 @@ function getPointX(index: number, count: number, chartW: number, left: number) {
   return left + (index / (count - 1)) * chartW
 }
 
+function drawSmoothLine(
+  ctx: CanvasRenderingContext2D,
+  points: { x: number; y: number }[],
+  xMin: number,
+  xMax: number,
+) {
+  if (points.length < 2) return
+
+  const clampX = (x: number) => Math.min(xMax, Math.max(xMin, x))
+
+  ctx.beginPath()
+  ctx.moveTo(points[0].x, points[0].y)
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i === 0 ? 0 : i - 1]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2 >= points.length ? points.length - 1 : i + 2]
+
+    const cp1x = clampX(p1.x + (p2.x - p0.x) / 6)
+    const cp1y = p1.y + (p2.y - p0.y) / 6
+    const cp2x = clampX(p2.x - (p3.x - p1.x) / 6)
+    const cp2y = p2.y - (p3.y - p1.y) / 6
+
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y)
+  }
+
+  ctx.stroke()
+}
+
 function renderChart(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  const padding = { top: 16, right: 12, bottom: 32, left: 36 }
+  const padding = { top: 16, right: 24, bottom: 32, left: 36 }
   const chartW = width - padding.left - padding.right
+  const chartRight = padding.left + chartW
   const chartH = height - padding.top - padding.bottom
 
   const allValues = props.series.flatMap((s) => s.data.map((v) => Number(v)))
@@ -55,12 +86,7 @@ function renderChart(ctx: CanvasRenderingContext2D, width: number, height: numbe
       return
     }
 
-    ctx.beginPath()
-    points.forEach((point, index) => {
-      if (index === 0) ctx.moveTo(point.x, point.y)
-      else ctx.lineTo(point.x, point.y)
-    })
-    ctx.stroke()
+    drawSmoothLine(ctx, points, padding.left, chartRight)
   })
 
   ctx.fillStyle = '#909399'
@@ -68,8 +94,13 @@ function renderChart(ctx: CanvasRenderingContext2D, width: number, height: numbe
   props.labels.forEach((label, index) => {
     if (index % Math.ceil(props.labels.length / 6) !== 0 && index !== props.labels.length - 1) return
     const x = getPointX(index, props.labels.length, chartW, padding.left)
-    ctx.fillText(label, Math.max(x - 12, 0), height - 8)
+    const isFirst = index === 0
+    const isLast = index === props.labels.length - 1
+    ctx.textAlign = isFirst ? 'left' : isLast ? 'right' : 'center'
+    const textX = isFirst ? padding.left : isLast ? chartRight : x
+    ctx.fillText(label, textX, height - 8)
   })
+  ctx.textAlign = 'left'
 }
 
 function initCanvas() {
@@ -122,7 +153,7 @@ watch(() => props.series.map((s) => s.data.join(',')), scheduleDraw)
       </view>
     </view>
     <view class="chart-box" :style="{ height: `${height}px` }">
-      <canvas :id="canvasId" type="2d" class="chart-canvas" :style="{ width: '95%', height: `${height}px` }" />
+      <canvas :id="canvasId" type="2d" class="chart-canvas" :style="{ height: `${height}px` }" />
       <view v-if="labels.length === 0" class="empty">暂无数据</view>
     </view>
   </view>
