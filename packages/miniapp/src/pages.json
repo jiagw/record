@@ -1,4 +1,12 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+      "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+    }
+  },
   "pages": [
     {
       "path": "pages/diet/index",
@@ -15,7 +23,7 @@
   ],
   "tabBar": {
     "color": "#909399",
-    "selectedColor": "#409eff",
+    "selectedColor": "#3c9cff",
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [

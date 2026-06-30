@@ -4,6 +4,13 @@ import path from "node:path";
 
 export default defineConfig({
   plugins: [uni()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['legacy-js-api', 'color-functions', 'import'],
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

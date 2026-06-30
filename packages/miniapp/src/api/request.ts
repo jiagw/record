@@ -46,8 +46,8 @@ export async function request<T>(options: RequestOptions, retried = false): Prom
   return body
 }
 
-export function toast(title: string, icon: 'success' | 'error' | 'none' = 'none') {
-  uni.showToast({ title, icon: icon === 'error' ? 'none' : icon })
+export function toast(title: string, _icon: 'success' | 'error' | 'none' = 'none') {
+  uni.$u.toast(title)
 }
 
 export async function confirm(content: string, title = '提示'): Promise<boolean> {
@@ -55,6 +55,8 @@ export async function confirm(content: string, title = '提示'): Promise<boolea
     uni.showModal({
       title,
       content,
+      confirmText: '继续',
+      cancelText: '取消',
       success: (res) => resolve(!!res.confirm),
     })
   })

@@ -12,6 +12,7 @@
     "dev:miniapp": "npm run dev:mp-weixin -w @record/miniapp",
     "build:server": "npm run build -w @record/shared && npm run build -w @record/server",
     "build:miniapp": "npm run build:mp-weixin -w @record/miniapp",
+    "postinstall": "node scripts/patch-uni-cli-shared.js",
     "db:generate": "npm run db:generate -w @record/server",
     "db:push": "npm run db:push -w @record/server",
     "deploy": "docker compose up -d --build"

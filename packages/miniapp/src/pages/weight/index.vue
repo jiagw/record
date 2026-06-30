@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import dayjs from 'dayjs'
 import { formatDateKey } from '@record/shared'
 import {
   loadAllWeightLogs,
@@ -13,20 +14,35 @@ import { confirm, toast } from '@/api/request'
 import LineChart from '@/components/LineChart.vue'
 
 const selectedDate = ref(formatDateKey(new Date()))
-const weight = ref<number | null>(null)
+const weightInput = ref('')
 const savedWeight = ref<number | null>(null)
+const datePickerShow = ref(false)
+const datePickerValue = ref(Date.now())
+
+const parsedWeight = computed(() => {
+  const trimmed = weightInput.value.trim()
+  if (trimmed === '' || trimmed === '.') return null
+  const n = Number(trimmed)
+  return Number.isFinite(n) ? n : null
+})
 const loading = ref(false)
 const saving = ref(false)
 const trendData = ref<WeightSummary[]>([])
 
 const chartLabels = computed(() => trendData.value.map((d) => d.label))
 const chartSeries = computed(() => [
-  { name: '体重', data: trendData.value.map((d) => d.weight), color: '#409eff' },
+  { name: '体重', data: trendData.value.map((d) => Number(d.weight)), color: '#3c9cff' },
 ])
 
-async function onDateChange(e: { detail: { value: string } }) {
-  const date = e.detail.value
-  if (weight.value !== savedWeight.value && savedWeight.value !== null) {
+function openDatePicker() {
+  datePickerValue.value = dayjs(selectedDate.value).valueOf()
+  datePickerShow.value = true
+}
+
+async function onDateConfirm(e: { value: number }) {
+  datePickerShow.value = false
+  const date = dayjs(e.value).format('YYYY-MM-DD')
+  if (parsedWeight.value !== savedWeight.value && savedWeight.value !== null) {
     const ok = await confirm('有未保存修改，切换日期将丢弃，是否继续？')
     if (!ok) return
   }
@@ -47,7 +63,7 @@ async function loadWeightForDate(date: string) {
   loading.value = true
   try {
     const log = await loadWeightLog(date)
-    weight.value = log?.weight ?? null
+    weightInput.value = log?.weight != null ? String(log.weight) : ''
     savedWeight.value = log?.weight ?? null
   } catch {
     toast('加载失败')
@@ -57,13 +73,14 @@ async function loadWeightForDate(date: string) {
 }
 
 async function handleSave() {
-  if (weight.value === null || weight.value <= 0 || weight.value > 500) {
+  const weight = parsedWeight.value
+  if (weight === null || weight <= 0 || weight > 500) {
     return toast('请输入有效体重')
   }
   saving.value = true
   try {
-    await saveWeightLog({ date: selectedDate.value, weight: weight.value })
-    savedWeight.value = weight.value
+    await saveWeightLog({ date: selectedDate.value, weight })
+    savedWeight.value = weight
     toast('保存成功', 'success')
     await loadTrendData()
   } catch {
@@ -82,35 +99,122 @@ onMounted(async () => {
 
 <template>
   <view class="page">
-    <view class="card toolbar">
-      <picker mode="date" :value="selectedDate" @change="onDateChange">
-        <view class="picker-row">日期：{{ selectedDate }}</view>
-      </picker>
-      <button class="btn-success" size="mini" :loading="saving" @click="handleSave">保存</button>
+    <view class="card toolbar-card">
+      <u-cell-group :border="false">
+        <u-cell
+          title="记录日期"
+          :value="selectedDate"
+          icon="calendar"
+          is-link
+          @click="openDatePicker"
+        />
+      </u-cell-group>
+      <view class="toolbar-action">
+        <u-button type="success" size="small" :loading="saving" text="保存" @click="handleSave" />
+      </view>
     </view>
 
     <view class="card">
-      <view class="label">当日体重 (kg)</view>
-      <input v-model.number="weight" type="digit" class="weight-input" placeholder="请输入体重" />
+      <view class="section-head">
+        <u-icon name="level" color="#3c9cff" size="18" />
+        <text class="section-title">当日体重</text>
+      </view>
+      <u-input
+        v-model="weightInput"
+        type="digit"
+        placeholder="请输入体重"
+        border="surround"
+        clearable
+      >
+        <template #suffix>
+          <text class="input-suffix">kg</text>
+        </template>
+      </u-input>
+      <text v-if="savedWeight != null" class="hint">已保存：{{ savedWeight }} kg</text>
     </view>
 
     <view class="card">
-      <view class="section-title">体重变化趋势</view>
-      <LineChart :labels="chartLabels" :series="chartSeries" />
+      <view class="section-head">
+        <u-icon name="list-dot" color="#3c9cff" size="18" />
+        <text class="section-title">体重变化趋势</text>
+      </view>
+      <view v-if="loading" class="loading-wrap">
+        <u-loading-icon text="加载中" />
+      </view>
+      <LineChart v-else :labels="chartLabels" :series="chartSeries" />
     </view>
+
+    <u-datetime-picker
+      v-model="datePickerValue"
+      :show="datePickerShow"
+      mode="date"
+      title="选择日期"
+      @confirm="onDateConfirm"
+      @cancel="datePickerShow = false"
+      @close="datePickerShow = false"
+    />
   </view>
 </template>
 
-<style scoped>
-.page { padding: 16px; }
-.toolbar { display: flex; justify-content: space-between; align-items: center; }
-.picker-row { color: #409eff; }
-.label { margin-bottom: 8px; color: #606266; }
-.weight-input {
-  border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 18px;
+<style scoped lang="scss">
+.page {
+  min-height: 100vh;
+  padding: 24rpx;
+  padding-bottom: 48rpx;
+  box-sizing: border-box;
 }
-.section-title { font-weight: 600; margin-bottom: 8px; }
+
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+}
+
+.toolbar-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.toolbar-card :deep(.u-cell-group) {
+  flex: 1;
+}
+
+.toolbar-action {
+  flex-shrink: 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #303133;
+}
+
+.input-suffix {
+  color: #909399;
+  font-size: 28rpx;
+  padding-right: 8rpx;
+}
+
+.hint {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 48rpx 0;
+}
 </style>

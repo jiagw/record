@@ -20,6 +20,16 @@ export async function loadWorkoutLog(date: string): Promise<DailyWorkoutLog | nu
   return request<DailyWorkoutLog | null>({ url: `/api/workout/${date}` })
 }
 
+export async function loadLastWorkoutByDayType(
+  dayType: DailyWorkoutLog['dayType'],
+  before: string,
+): Promise<DailyWorkoutLog | null> {
+  if (!dayType) return null
+  return request<DailyWorkoutLog | null>({
+    url: `/api/workout/last?dayType=${dayType}&before=${before}`,
+  })
+}
+
 export async function saveWorkoutLog(log: DailyWorkoutLog): Promise<void> {
   await request({
     url: `/api/workout/${log.date}`,
