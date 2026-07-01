@@ -199,6 +199,10 @@ function foodCellValueStyle(record: DietRecord) {
     : { color: '#c0c4cc' }
 }
 
+function goCarbCycle() {
+  uni.navigateTo({ url: '/pages/carb-cycle/index' })
+}
+
 function recordNutritionItems(record: DietRecord) {
   const n = recordNutrition(record)
   if (!n) return []
@@ -233,6 +237,13 @@ onMounted(async () => {
         <view class="toolbar-action">
           <u-button type="success" size="small" :loading="saving" text="保存" @click="handleSave" />
         </view>
+      </view>
+      <view class="card link-card" @click="goCarbCycle">
+        <view class="link-card-inner">
+          <u-icon name="reload" color="#3c9cff" size="18" />
+          <text class="link-card-text">碳循环计算器</text>
+        </view>
+        <u-icon name="arrow-right" color="#c0c4cc" size="16" />
       </view>
     </view>
 
@@ -375,12 +386,32 @@ onMounted(async () => {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 24rpx 0;
+  padding: 24rpx 0 0;
   background: #f0f2f5;
 
-  .card {
-    margin-bottom: 0;
+  .toolbar-card {
+    margin-bottom: 16rpx;
   }
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+}
+
+.link-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.link-card-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #303133;
 }
 
 .card {

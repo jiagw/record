@@ -19,6 +19,10 @@
     {
       "path": "pages/workout/index",
       "style": { "navigationBarTitleText": "健身记录" }
+    },
+    {
+      "path": "pages/carb-cycle/index",
+      "style": { "navigationBarTitleText": "碳循环" }
     }
   ],
   "tabBar": {
